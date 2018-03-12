@@ -92,7 +92,9 @@ func downloadScanClient(hubHost string, hubUser string, hubPassword string) (*sc
 	searchDir := fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre/bin", currentVersion)
 	if stat, err := os.Stat(searchDir); err == nil && stat.IsDir() {
 		// path is a directory
-		log.Info("Java scan client is present")
+		log.Infof("Java scan client is present")
+	} else {
+		log.Infof("Java scan client is not present")
 	}
 
 	// 8. we're done
