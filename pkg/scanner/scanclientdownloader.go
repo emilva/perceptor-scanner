@@ -24,6 +24,7 @@ package scanner
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/blackducksoftware/hub-client-go/hubclient"
 	log "github.com/sirupsen/logrus"
@@ -87,6 +88,12 @@ func downloadScanClient(hubHost string, hubUser string, hubPassword string) (*sc
 		return nil, err
 	}
 	log.Infof("successfully unzipped from %s to %s", scanClientZipPath, scanClientRootPath)
+	
+	searchDir := "/tmp/scanner/scan.cli-4.4.2/jre/bin"
+	err = filepath.Walk(searchDir, func(path string, f os.FileInfo, err error) error {
+		log.Infof("Is directory present: %v", f.IsDir())
+		return nil
+	})
 
 	// 7. we're done
 	return &scanClientInfo{hubVersion: currentVersion.Version, scanClientRootPath: scanClientRootPath}, nil
