@@ -89,15 +89,15 @@ func downloadScanClient(hubHost string, hubUser string, hubPassword string) (*sc
 	log.Infof("successfully unzipped from %s to %s", scanClientZipPath, scanClientRootPath)
 
 	// 7.Verify Java Scan client
-	status := checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s", currentVersion))
+	status := checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s", currentVersion.Version))
 	if status == false {
 		log.Infof("/tmp/scanner/scan.cli-%s path is not found")
 	}
-	status = checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre", currentVersion))
+	status = checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre", currentVersion.Version))
 	if status == false {
 		log.Infof("/tmp/scanner/scan.cli-%s/jre path is not found")
 	}
-	status = checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre/bin", currentVersion))
+	status = checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre/bin", currentVersion.Version))
 	if status == false {
 		log.Infof("/tmp/scanner/scan.cli-%s/jre/bin path is not found")
 	}
