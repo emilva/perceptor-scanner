@@ -89,12 +89,13 @@ func downloadScanClient(hubHost string, hubUser string, hubPassword string) (*sc
 	}
 	log.Infof("successfully unzipped from %s to %s", scanClientZipPath, scanClientRootPath)
 	
-	searchDir := "/tmp/scanner/scan.cli-4.4.2/jre/bin"
+	// 7.Verify Java Scan client
+	searchDir := fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre/bin", currentVersion)
 	err = filepath.Walk(searchDir, func(path string, f os.FileInfo, err error) error {
 		log.Infof("Is directory present: %v", f.IsDir())
 		return nil
 	})
 
-	// 7. we're done
+	// 8. we're done
 	return &scanClientInfo{hubVersion: currentVersion.Version, scanClientRootPath: scanClientRootPath}, nil
 }
