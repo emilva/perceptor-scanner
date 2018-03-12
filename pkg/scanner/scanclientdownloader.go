@@ -89,14 +89,28 @@ func downloadScanClient(hubHost string, hubUser string, hubPassword string) (*sc
 	log.Infof("successfully unzipped from %s to %s", scanClientZipPath, scanClientRootPath)
 
 	// 7.Verify Java Scan client
-	searchDir := fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre/bin", currentVersion)
-	if stat, err := os.Stat(searchDir); err == nil && stat.IsDir() {
-		// path is a directory
-		log.Infof("Java scan client is present")
-	} else {
-		log.Infof("Java scan client is not present")
+	status := checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s", currentVersion))
+	if status == false {
+		log.Infof("/tmp/scanner/scan.cli-%s path is not found")
+	}
+	status = checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre", currentVersion))
+	if status == false {
+		log.Infof("/tmp/scanner/scan.cli-%s/jre path is not found")
+	}
+	status = checkDirExist(fmt.Sprintf("/tmp/scanner/scan.cli-%s/jre/bin", currentVersion))
+	if status == false {
+		log.Infof("/tmp/scanner/scan.cli-%s/jre/bin path is not found")
 	}
 
 	// 8. we're done
 	return &scanClientInfo{hubVersion: currentVersion.Version, scanClientRootPath: scanClientRootPath}, nil
+}
+
+func checkDirExist(searchDir string) bool {
+	stat, err := os.Stat(searchDir)
+	if err != nil {
+		log.Errorf("unable to check the Directory status %s: %s", searchDir, err.Error())
+		return false
+	}
+	return err == nil && stat.IsDir()
 }
