@@ -3,7 +3,7 @@ steps:
 # Scanner: Build binary, build container, push.
 
 - name: 'gcr.io/cloud-builders/go'
-  args: ['build', '-a', '-installsuffix', 'cgo', '-o', './cmd/perceptor-scanner/perceptor-scanner', './cmd/perceptor-scanner/perceptor-scanner.go']
+  args: ['build', '-o', './cmd/perceptor-scanner/perceptor-scanner', './cmd/perceptor-scanner/perceptor-scanner.go']
   env:
   - 'PROJECT_ROOT=github.com/blackducksoftware/perceptor-scanner'
   - 'CGO_ENABLED=0'
