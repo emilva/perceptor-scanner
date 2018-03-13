@@ -22,7 +22,6 @@ under the License.
 package scanner
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"time"
@@ -72,16 +71,8 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 	scanCliImplJarPath := hsc.scanClientInfo.scanCliImplJarPath()
 	scanCliJarPath := hsc.scanClientInfo.scanCliJarPath()
 	scanCliJavaPath := hsc.scanClientInfo.scanCliJavaPath()
-	envPath := os.Getenv("PATH")
-
-	// Set the environment variable
-	os.Setenv("PATH", fmt.Sprintf("%s:%s", scanCliJavaPath, envPath))
-	os.Setenv("JAVA_HOME", fmt.Sprintf("%s", scanCliJavaPath))
-
-	checkJavaClientExists(scanCliJavaPath)
-
 	path := image.DockerTarFilePath()
-	cmd := exec.Command("java",
+	cmd := exec.Command(scanCliJavaPath+"java",
 		"-Xms512m",
 		"-Xmx4096m",
 		"-Dblackduck.scan.cli.benice=true",
@@ -144,16 +135,5 @@ func cleanUpTarFile(path string) {
 		log.Errorf("unable to remove file %s: %s", path, err.Error())
 	} else {
 		log.Infof("successfully cleaned up file %s", path)
-	}
-}
-
-func checkJavaClientExists(searchDir string) {
-	path, err := exec.LookPath(fmt.Sprintf("%sjava", searchDir))
-	log.Infof(os.Getenv("PATH"))
-	log.Infof(os.Getenv("JAVA_HOME"))
-	if err != nil {
-		fmt.Printf("didn't find 'Java' executable\n")
-	} else {
-		fmt.Printf("'Java' executable is in '%s'\n", path)
 	}
 }

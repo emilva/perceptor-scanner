@@ -41,5 +41,5 @@ func (sci *scanClientInfo) scanCliJarPath() string {
 }
 
 func (sci *scanClientInfo) scanCliJavaPath() string {
-	return fmt.Sprintf("%s/scan.cli-%s/jre/bin", sci.scanClientRootPath, sci.hubVersion)
+	return fmt.Sprintf("%s/scan.cli-%s/jre/bin/", sci.scanClientRootPath, sci.hubVersion)
 }
