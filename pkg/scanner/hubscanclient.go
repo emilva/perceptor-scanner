@@ -24,6 +24,7 @@ package scanner
 import (
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -74,13 +75,20 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 
 	status := checkDirExist(scanCliJavaPath)
 	if status == false {
-		log.Infof("%s path is not exist", scanCliJavaPath)
+		log.Infof("%s path is not exists", scanCliJavaPath)
 	} else {
-		log.Infof("%s path exist", scanCliJavaPath)
+		log.Infof("%s path exists", scanCliJavaPath)
 	}
 
 	path := image.DockerTarFilePath()
-	cmd := exec.Command(scanCliJavaPath+"java",
+
+	cmd := exec.Command("echo", "Called from Go!")
+	// Combine stdout and stderr
+	printCommand(cmd)
+	output, err := cmd.CombinedOutput()
+	printOutput(output)
+
+	cmd = exec.Command(scanCliJavaPath+"java",
 		"-Xms512m",
 		"-Xmx4096m",
 		"-Dblackduck.scan.cli.benice=true",
@@ -99,24 +107,30 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 		"-v",
 		path)
 
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
 	log.Infof("running command %+v for image %s\n", cmd, job.Sha)
 	startScanClient := time.Now()
-	err = cmd.Run()
+	stdoutStderr, err := cmd.CombinedOutput()
 
 	recordScanClientDuration(time.Now().Sub(startScanClient), err == nil)
 	recordTotalScannerDuration(time.Now().Sub(startTotal), err == nil)
 
 	if err != nil {
 		recordScannerError("scan client failed")
-		log.Errorf("java scanner failed for image %s with error %s", job.Sha, err.Error())
+		log.Errorf("java scanner failed for image %s with error %s and output:\n%s\n", job.Sha, err.Error(), string(stdoutStderr))
 		return err
 	}
-	log.Infof("successfully completed java scanner for image %s: %s", job.Sha, cmd.Stdout)
+	log.Infof("successfully completed java scanner for image %s: %s", job.Sha, stdoutStderr)
 	return err
+}
+
+func printCommand(cmd *exec.Cmd) {
+	log.Infof("==> Executing: %s\n", strings.Join(cmd.Args, " "))
+}
+
+func printOutput(outs []byte) {
+	if len(outs) > 0 {
+		log.Infof("==> Output: %s\n", string(outs))
+	}
 }
 
 // func (hsc *HubScanClient) ScanCliSh(job ScanJob) error {
