@@ -22,9 +22,9 @@ under the License.
 package scanner
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -73,25 +73,10 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 	scanCliJarPath := hsc.scanClientInfo.scanCliJarPath()
 	scanCliJavaPath := hsc.scanClientInfo.scanCliJavaPath()
 
-	status := checkDirExist(scanCliJavaPath)
-	if status == false {
-		log.Infof("%s path is not exists", scanCliJavaPath)
-	} else {
-		log.Infof("%s path exists", scanCliJavaPath)
-	}
+	checkJavaClientExists(scanCliJavaPath)
 
 	path := image.DockerTarFilePath()
-
-	cmd := exec.Command("echo", "Called from Go!")
-	// Combine stdout and stderr
-	printCommand(cmd)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Errorf("Echo command failed: %s", err.Error())
-	}
-	printOutput(output)
-
-	cmd = exec.Command(scanCliJavaPath+"java",
+	cmd := exec.Command(scanCliJavaPath+"java",
 		"-Xms512m",
 		"-Xmx4096m",
 		"-Dblackduck.scan.cli.benice=true",
@@ -126,16 +111,6 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 	return err
 }
 
-func printCommand(cmd *exec.Cmd) {
-	log.Infof("==> Executing: %s\n", strings.Join(cmd.Args, " "))
-}
-
-func printOutput(outs []byte) {
-	if len(outs) > 0 {
-		log.Infof("==> Output: %s\n", string(outs))
-	}
-}
-
 // func (hsc *HubScanClient) ScanCliSh(job ScanJob) error {
 // 	pathToScanner := "./dependencies/scan.cli-4.3.0/bin/scan.cli.sh"
 // 	cmd := exec.Command(pathToScanner,
@@ -164,5 +139,14 @@ func cleanUpTarFile(path string) {
 		log.Errorf("unable to remove file %s: %s", path, err.Error())
 	} else {
 		log.Infof("successfully cleaned up file %s", path)
+	}
+}
+
+func checkJavaClientExists(searchDir string) {
+	path, err := exec.LookPath(fmt.Sprintf("%s/java", searchDir))
+	if err != nil {
+		fmt.Printf("didn't find 'ls' executable\n")
+	} else {
+		fmt.Printf("'ls' executable is in '%s'\n", path)
 	}
 }
