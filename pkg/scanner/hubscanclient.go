@@ -144,9 +144,10 @@ func cleanUpTarFile(path string) {
 
 func checkJavaClientExists(searchDir string) {
 	path, err := exec.LookPath(fmt.Sprintf("%s/java", searchDir))
+	log.Infof(os.Getenv("PATH"))
 	if err != nil {
-		fmt.Printf("didn't find 'ls' executable\n")
+		fmt.Printf("didn't find 'Java' executable\n")
 	} else {
-		fmt.Printf("'ls' executable is in '%s'\n", path)
+		fmt.Printf("'Java' executable is in '%s'\n", path)
 	}
 }
