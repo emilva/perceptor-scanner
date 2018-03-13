@@ -71,6 +71,14 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 	scanCliImplJarPath := hsc.scanClientInfo.scanCliImplJarPath()
 	scanCliJarPath := hsc.scanClientInfo.scanCliJarPath()
 	scanCliJavaPath := hsc.scanClientInfo.scanCliJavaPath()
+
+	status := checkDirExist(scanCliJavaPath)
+	if status == false {
+		log.Infof("%s path is not exist", scanCliJavaPath)
+	} else {
+		log.Infof("%s path exist", scanCliJavaPath)
+	}
+
 	path := image.DockerTarFilePath()
 	cmd := exec.Command(scanCliJavaPath+"java",
 		"-Xms512m",
@@ -91,19 +99,23 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 		"-v",
 		path)
 
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
 	log.Infof("running command %+v for image %s\n", cmd, job.Sha)
 	startScanClient := time.Now()
-	stdoutStderr, err := cmd.CombinedOutput()
+	err = cmd.Run()
 
 	recordScanClientDuration(time.Now().Sub(startScanClient), err == nil)
 	recordTotalScannerDuration(time.Now().Sub(startTotal), err == nil)
 
 	if err != nil {
 		recordScannerError("scan client failed")
-		log.Errorf("java scanner failed for image %s with error %s and output:\n%s\n", job.Sha, err.Error(), string(stdoutStderr))
+		log.Errorf("java scanner failed for image %s with error %s", job.Sha, err.Error())
 		return err
 	}
-	log.Infof("successfully completed java scanner for image %s: %s", job.Sha, stdoutStderr)
+	log.Infof("successfully completed java scanner for image %s: %s", job.Sha, cmd.Stdout)
 	return err
 }
 
