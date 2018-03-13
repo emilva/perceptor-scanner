@@ -86,6 +86,9 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 	// Combine stdout and stderr
 	printCommand(cmd)
 	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Errorf("Echo command failed: %s", err.Error())
+	}
 	printOutput(output)
 
 	cmd = exec.Command(scanCliJavaPath+"java",
