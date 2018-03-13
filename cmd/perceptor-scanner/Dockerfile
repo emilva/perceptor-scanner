@@ -8,7 +8,7 @@ RUN mkdir /opt/java
 
 WORKDIR /opt/java
 
-RUN wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/9.0.4+11/c2514751926b4512b076cc82f959763f/jdk-9.0.4_linux-x64_bin.tar.gz
+RUN wget --no-check-certificate -c --header "Cookie: oraclelicense=accept-securebackup-cookie" -q http://download.oracle.com/otn-pub/java/jdk/9.0.4+11/c2514751926b4512b076cc82f959763f/jdk-9.0.4_linux-x64_bin.tar.gz
 
 RUN tar -xvf jdk-9.0.4_linux-x64_bin.tar.gz
 
