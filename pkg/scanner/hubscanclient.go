@@ -74,6 +74,7 @@ func (hsc *HubScanClient) Scan(job ScanJob) error {
 	scanCliJavaPath := hsc.scanClientInfo.scanCliJavaPath()
 	envPath := os.Getenv("PATH")
 
+	// Set the environment variable
 	os.Setenv("PATH", fmt.Sprintf("%s:%s", scanCliJavaPath, envPath))
 	os.Setenv("JAVA_HOME", fmt.Sprintf("%s", scanCliJavaPath))
 
